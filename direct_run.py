@@ -172,6 +172,37 @@ def main():
 
     model = Model(config).float().to(device)
 
+    # Add to direct_run.py just after model creation
+    def save_model_config(args, filepath):
+        """Save the model configuration for later reference"""
+        config = {
+            "enc_in": args.enc_in,
+            "dec_in": args.dec_in,
+            "c_out": args.c_out,
+            "seq_len": args.seq_len,
+            "label_len": args.label_len,
+            "pred_len": args.pred_len,
+            "d_model": args.d_model,
+            "n_heads": args.n_heads,
+            "e_layers": args.e_layers,
+            "d_layers": args.d_layers,
+            "d_ff": args.d_ff,
+            "dropout": args.dropout,
+            "embed": args.embed,
+            "freq": args.freq,
+            "activation": args.activation,
+            "output_attention": args.output_attention,
+            # Add any other parameters needed for model initialization
+        }
+        import json
+        with open(filepath, 'w') as f:
+            json.dump(config, f, indent=2)
+        return config
+
+    # Save the configuration
+    config_path = os.path.join(args.checkpoints, 'model_config.json')
+    save_model_config(args, config_path)
+
     # Apply torch.compile ONCE before training loop if optimizing for MPS
     if args.optimize_for_mps and device.type == 'mps' and not args.no_compile:
         if hasattr(torch, 'compile'):
@@ -209,6 +240,9 @@ def main():
     # Early stopping
     early_stopping = EarlyStopping(patience=args.patience, verbose=True)
     model_dir = args.checkpoints
+    # Ensure the directory exists
+    os.makedirs(model_dir, exist_ok=True)
+    # Create a more specific model path
     model_path = os.path.join(model_dir, 'best_model.pth')
     
     # Training and validation
@@ -288,9 +322,9 @@ def main():
         print(f"Epoch {epoch+1}: Train Loss: {train_loss:.4f}, Test Loss: {test_loss:.4f}")
         
         # Early stopping check
-        early_stopping(test_loss, model, model_dir)
+        early_stopping(test_loss, model, model_path)  # Pass the full path, not just directory
         if early_stopping.early_stop:
-            print("Early stopping triggered")
+            print(f"Early stopping triggered. Best model saved to {model_path}")
             break
         
         # Adjust learning rate
@@ -309,7 +343,12 @@ def main():
     
     # Testing with best model
     print("Loading best model for testing...")
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    try:
+        model.load_state_dict(torch.load(model_path, map_location=device))
+        print(f"Successfully loaded best model from {model_path}")
+    except FileNotFoundError:
+        print(f"Could not find best model at {model_path}. Using current model state.")
+        # Continue with the current model state
     model.eval()
     
     # Generate predictions
