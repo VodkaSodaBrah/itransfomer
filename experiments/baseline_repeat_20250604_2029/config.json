@@ -1,0 +1,14 @@
+{
+  "device": "mps",
+  "batch_size": 512,
+  "train_epochs": 20,
+  "d_model": 512,
+  "n_heads": 8,
+  "e_layers": 2,
+  "learning_rate": 0.001,
+  "optimize_for_mps": true,
+  "no_compile": true,
+  "disable_dropout_for_mps_compile": true,
+  "checkpoints": "./experiments/baseline_repeat_20250604_2029/checkpoints",
+  "output_dir": "./experiments/baseline_repeat_20250604_2029/output"
+}

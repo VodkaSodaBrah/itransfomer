@@ -1,0 +1,18 @@
+{
+  "enc_in": 5,
+  "dec_in": 5,
+  "c_out": 1,
+  "seq_len": 96,
+  "label_len": 48,
+  "pred_len": 24,
+  "d_model": 512,
+  "n_heads": 8,
+  "e_layers": 2,
+  "d_layers": 1,
+  "d_ff": 512,
+  "dropout": 0.1,
+  "embed": "timeF",
+  "freq": "1min",
+  "activation": "gelu",
+  "output_attention": false
+}

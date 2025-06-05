@@ -9,23 +9,23 @@ def detect_and_print_device():
     
     # Check MPS (Mac)
     if torch.backends.mps.is_available():
-        print("✅ MPS (Apple Silicon GPU) is available")
+        print("MPS (Apple Silicon GPU) is available")
         recommended = "mps"
     else:
-        print("❌ MPS (Apple Silicon GPU) is not available")
+        print("MPS (Apple Silicon GPU) is not available")
         
     # Check CUDA
     if torch.cuda.is_available():
-        print(f"✅ CUDA is available with {torch.cuda.device_count()} devices:")
+        print(f"CUDA is available with {torch.cuda.device_count()} devices:")
         for i in range(torch.cuda.device_count()):
             print(f"   - Device {i}: {torch.cuda.get_device_name(i)}")
         recommended = "cuda"
     else:
-        print("❌ CUDA is not available")
+        print("CUDA is not available")
         
     # Fallback to CPU
     if not torch.backends.mps.is_available() and not torch.cuda.is_available():
-        print("⚠️ No GPU acceleration available, using CPU")
+        print("No GPU acceleration available, using CPU")
         recommended = "cpu"
     
     return recommended
@@ -57,7 +57,9 @@ def main():
         "--d_layers", "1",
         "--d_ff", "512",
         "--batch_size", "16",
-        "--train_epochs", "5",
+        # Quick-run: limit total samples to speed up end-to-end test
+        "--max_len", "50000",
+        "--train_epochs", "1",
         "--learning_rate", "0.0005",
         "--num_workers", "0",
         "--device", recommended_device
