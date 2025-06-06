@@ -474,8 +474,8 @@ def main():
         batch_size=args.batch_size,
         shuffle=True,
         drop_last=True,
-        num_workers=0,  # Crucial for MPS
-        pin_memory=False # Crucial for MPS
+        num_workers=0,  
+        pin_memory=False
     )
     
     test_loader = DataLoader(
@@ -483,8 +483,8 @@ def main():
         batch_size=args.batch_size,
         shuffle=False,
         drop_last=False,
-        num_workers=0,  # Crucial for MPS
-        pin_memory=False # Crucial for MPS
+        num_workers=0,  
+        pin_memory=False 
     )
 
     print(f"Train data: {len(train_dataset)} samples")
@@ -504,7 +504,7 @@ def main():
     config.is_mps_compiled = False # We'll set this after attempting to compile
 
     model = Model(config).float().to(device)
-    criterion = torch.nn.MSELoss()  # Add this line here
+    criterion = torch.nn.MSELoss()  
 
     # Add to direct_run.py just after model creation
     def save_model_config(args, filepath):
@@ -526,7 +526,6 @@ def main():
             "freq": args.freq,
             "activation": args.activation,
             "output_attention": args.output_attention,
-            # Add any other parameters needed for model initialization
         }
         with open(filepath, 'w') as f:
             json.dump(config, f, indent=2)
